@@ -3,10 +3,8 @@ name: Publish Release
 on:
     workflow_dispatch:
     push:
-        branches: [main]
-        paths-ignore:
-            - .github/workflows/*
-            - README.md
+        tags:
+            - "*"
 
 jobs:
     publish:
