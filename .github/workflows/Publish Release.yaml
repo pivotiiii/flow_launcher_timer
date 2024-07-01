@@ -1,0 +1,37 @@
+name: Publish Release
+
+on:
+    workflow_dispatch:
+    push:
+        branches: [main]
+        paths-ignore:
+            - .github/workflows/*
+            - README.md
+
+jobs:
+    publish:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+        steps:
+            - uses: actions/checkout@v4
+            - name: Set up Node.Js
+              uses: actions/setup-node@v4
+              with:
+                  node-version-file: "package.json"
+            - name: get version
+              id: version
+              uses: notiz-dev/github-action-json-property@release
+              with:
+                  path: "plugin.json"
+                  prop_path: "Version"
+            - run: echo ${{steps.version.outputs.prop}}
+            - name: Install dependencies
+              run: |
+                  npm install
+                  zip -r pivotiiii.Flow-Plugin.Timer.zip . -x '*.git*'
+            - name: Publish
+              uses: softprops/action-gh-release@v2
+              with:
+                  files: "pivotiiii.Flow-Plugin.Timer.zip"
+                  tag_name: "v${{steps.version.outputs.prop}}"

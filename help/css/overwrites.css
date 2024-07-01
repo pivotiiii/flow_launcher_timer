@@ -1,0 +1,74 @@
+@media (min-width: 576px) {
+    :root {
+        --pico-font-size: 100%;
+    }
+}
+@media (min-width: 768px) {
+    :root {
+        --pico-font-size: 100%;
+    }
+}
+@media (min-width: 1024px) {
+    :root {
+        --pico-font-size: 100%;
+    }
+}
+@media (min-width: 1280px) {
+    :root {
+        --pico-font-size: 100%;
+    }
+}
+@media (min-width: 1536px) {
+    :root {
+        --pico-font-size: 100%;
+    }
+}
+
+td {
+    text-align: left;
+}
+
+th {
+    text-align: center;
+}
+
+th.input {
+    width: 185px;
+}
+
+.container,
+.container-fluid {
+    width: 100%;
+    margin-right: auto;
+    margin-left: auto;
+    padding-right: var(--pico-spacing);
+    padding-left: var(--pico-spacing);
+}
+
+@media (min-width: 576px) {
+    .container {
+        max-width: initial;
+        padding-right: var(--pico-spacing);
+        padding-left: var(--pico-spacing);
+    }
+}
+@media (min-width: 768px) {
+    .container {
+        max-width: 750px;
+    }
+}
+@media (min-width: 1024px) {
+    .container {
+        max-width: 750px;
+    }
+}
+@media (min-width: 1280px) {
+    .container {
+        max-width: 750px;
+    }
+}
+@media (min-width: 1536px) {
+    .container {
+        max-width: 750px;
+    }
+}

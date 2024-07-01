@@ -1,0 +1,30 @@
+{
+    "name": "flow-plugin-timer",
+    "version": "1.0.0",
+    "description": "Plugin for Flow Launcher that sets timers and alarms using hourglass.",
+    "main": "./src/main.js",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/pivotiiii/flow_launcher_timer.git"
+    },
+    "keywords": [
+        "flowlauncher",
+        "timer",
+        "alarm"
+    ],
+    "author": {
+        "name": "pivotiiii",
+        "url": "https://pivotiiii.github.io"
+    },
+    "bugs": {
+        "url": "https://github.com/pivotiiii/flow_launcher_timer/issues"
+    },
+    "homepage": "https://github.com/pivotiiii/flow_launcher_timer",
+    "type": "module",
+    "dependencies": {
+        "open": "^10.1.0"
+    },
+    "devDependencies": {
+        "@types/node": "^20.14.9"
+    }
+}

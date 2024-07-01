@@ -1,0 +1,12 @@
+{
+    "ID": "a0d7601f81a942e58b4952be3eb17fb2",
+    "ActionKeyword": "timer",
+    "Name": "Timer",
+    "Description": "Set timers and alarms.",
+    "Author": "pivotiiii",
+    "Version": "1.0.0",
+    "Language": "JavaScript",
+    "Website": "https://github.com/pivotiiii/flow_launcher_timer",
+    "ExecuteFileName": "src\\main.js",
+    "IcoPath": "img\\app.png"
+}

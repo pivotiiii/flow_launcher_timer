@@ -1,0 +1,43 @@
+body:
+    - type: dropdown
+      attributes:
+          name: theme
+          label: Theme
+          description: Sets the theme of the timer window.
+          defaultValue: blue
+          options:
+              - red
+              - orange
+              - yellow
+              - green
+              - blue
+              - purple
+              - gray
+              - black
+    - type: checkbox
+      attributes:
+          name: useDarkTheme
+          label: Use dark Theme
+          description: Use a dark theme for the timer.
+          defaultValue: "true"
+    - type: checkbox
+      attributes:
+          name: prefer24h
+          label: Prefer 24h time
+          description: >-
+              When the input contains a time of day that does not specify "am" or
+              "pm", prefer interpreting the input as a 24-hour time rather than the
+              closest 12-hour time to the current time.
+          defaultValue: "true"
+    - type: checkbox
+      attributes:
+          name: displayDigital
+          label: Display digital clock time
+          description: Display time as "00:05:12" instead of "5 minutes 12 seconds".
+          defaultValue: "false"
+    - type: checkbox
+      attributes:
+          name: elapsedTime
+          label: Show elapsed time
+          description: Show elapsed time instead of remaining time.
+          defaultValue: "false"
