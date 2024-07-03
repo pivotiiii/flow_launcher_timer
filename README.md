@@ -37,4 +37,6 @@ All time values are case insensitive. Timer titles are optional and cannot conta
 
 ![timer2](https://github.com/pivotiiii/flow_launcher_timer/assets/17112987/2e5a1d16-0f5a-4fab-9f39-c4c8cbe52668)
 
+Timers can be paused/resumed with `pause` and `resume`.
+
 Any invalid inputs also show an option that displays a help site.
