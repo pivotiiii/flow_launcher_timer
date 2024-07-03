@@ -24,12 +24,20 @@ if (method === "query") {
 
 function parseQuery(query, settings) {
     try {
+        if (query.startsWith("pause")) {
+            logCommand("pause");
+            return;
+        } else if (query.startsWith("resume")) {
+            logCommand("resume");
+            return;
+        }
+
         const splitQuery = query.split(" ");
         let title = null;
 
         const stdOut = execFileSync(hourglassPath, ["--validate-args", "on", query]).toString();
         const isValidArgs = stdOut.split(/\r?\n/)[0] === "true";
-        let timeString = isValidArgs ? stdOut.split(/\r?\n/)[2] : null;
+        let timeString = isValidArgs ? stdOut.split(/\r?\n/)[1] : null;
         if (isValidArgs === false) {
             if (splitQuery.length > 1) {
                 const titleFirst = splitQuery.slice(0, 1)[0];
@@ -43,11 +51,11 @@ function parseQuery(query, settings) {
                 if (stdOutTitleFirst.split(/\r?\n/)[0] === "true") {
                     title = titleFirst;
                     query = argsRemainingTitleFirst.join(" ");
-                    timeString = stdOutTitleFirst.split(/\r?\n/)[2];
+                    timeString = stdOutTitleFirst.split(/\r?\n/)[1];
                 } else if (stdOutTitleLast.split(/\r?\n/)[0] === "true") {
                     title = titleLast;
                     query = argsRemainingTitleLast.join(" ");
-                    timeString = stdOutTitleLast.split(/\r?\n/)[2];
+                    timeString = stdOutTitleLast.split(/\r?\n/)[1];
                 } else {
                     logInvalidQuery();
                 }
@@ -119,6 +127,37 @@ function logValidQuery(timeString, optionsArray, title) {
                     },
                     IcoPath: path.resolve(__dirname, "img", "app.png"),
                     score: -100,
+                },
+            ],
+        })
+    );
+}
+
+function logCommand(command) {
+    let description = null;
+    switch (command) {
+        case "resume":
+            description = "Resume all paused timers.";
+            break;
+        case "pause":
+            description = "Pause all running timers.";
+            break;
+        default:
+            console.log(JSON.stringify({result: []}));
+            break;
+    }
+    console.log(
+        JSON.stringify({
+            result: [
+                {
+                    Title: description,
+                    Subtitle: "",
+                    JsonRPCAction: {
+                        method: "startTimer",
+                        parameters: [command],
+                    },
+                    IcoPath: path.resolve(__dirname, "img", "app.png"),
+                    score: 0,
                 },
             ],
         })
