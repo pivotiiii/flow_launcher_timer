@@ -5,7 +5,11 @@ import {fileURLToPath} from "url";
 import open from "../node_modules/open/index.js";
 
 const __dirname = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../");
-const hourglassPath = path.resolve(__dirname, "hourglass", "Hourglass.exe");
+const hourglassDir = path.resolve(__dirname, "hourglass");
+const hourglassExe = path.resolve(hourglassDir, "Hourglass.exe");
+const hourglassValidatorExe = path.resolve(hourglassDir, "hourglass_args_validator.exe");
+
+const hourglassCommands = {resume: ["resume", "continue", "go"], pause: ["pause", "wait", "stop"]};
 
 const {method, parameters, settings} = JSON.parse(process.argv[2]);
 
@@ -14,58 +18,62 @@ if (method === "query") {
     if (query.length > 0) {
         parseQuery(query, settings);
     } else {
-        console.log(JSON.stringify({result: []}));
+        logEmptyQuery();
+        //console.log(JSON.stringify({result: []}));
     }
 } else if (method === "startTimer") {
-    open(hourglassPath, {app: {arguments: parameters}});
+    open(hourglassExe, {app: {arguments: parameters}});
 } else if (method === "showHelp") {
     open(path.resolve(__dirname, "help", "help.html"));
 }
 
 function parseQuery(query, settings) {
     try {
-        if (query.startsWith("pause")) {
-            logCommand("pause");
-            return;
-        } else if (query.startsWith("resume")) {
-            logCommand("resume");
-            return;
+        for (const [key, value] of Object.entries(hourglassCommands)) {
+            if (value.includes(query)) {
+                logCommand(key);
+                return;
+            }
         }
 
         const splitQuery = query.split(" ");
         let title = null;
 
-        const stdOut = execFileSync(hourglassPath, ["--validate-args", "on", query]).toString();
-        const isValidArgs = stdOut.split(/\r?\n/)[0] === "true";
-        let timeString = isValidArgs ? stdOut.split(/\r?\n/)[1] : null;
-        if (isValidArgs === false) {
+        const result = hourglassValidateArgs([query]);
+
+        const isValidArgs = result.result;
+        let timeString = result.timeStrings.length > 0 ? result.timeStrings[0] : null;
+
+        if (!isValidArgs) {
             if (splitQuery.length > 1) {
                 const titleFirst = splitQuery.slice(0, 1)[0];
                 const argsRemainingTitleFirst = splitQuery.slice(1, splitQuery.length);
                 const titleLast = splitQuery.slice(splitQuery.length - 1, splitQuery.length)[0];
                 const argsRemainingTitleLast = splitQuery.slice(0, splitQuery.length - 1);
 
-                const stdOutTitleFirst = execFileSync(hourglassPath, ["--validate-args", "on", "--title", titleFirst, argsRemainingTitleFirst.join(" ")]).toString();
-                const stdOutTitleLast = execFileSync(hourglassPath, ["--validate-args", "on", "--title", titleLast, argsRemainingTitleLast.join(" ")]).toString();
+                const resultFirst = hourglassValidateArgs(["--title", titleFirst, argsRemainingTitleFirst.join(" ")]);
+                const resultLast = hourglassValidateArgs(["--title", titleLast, argsRemainingTitleLast.join(" ")]);
 
-                if (stdOutTitleFirst.split(/\r?\n/)[0] === "true") {
+                if (resultFirst.result) {
                     title = titleFirst;
                     query = argsRemainingTitleFirst.join(" ");
-                    timeString = stdOutTitleFirst.split(/\r?\n/)[1];
-                } else if (stdOutTitleLast.split(/\r?\n/)[0] === "true") {
+                    timeString = resultFirst.timeStrings.length > 0 ? resultFirst.timeStrings[0] : null;
+                } else if (resultLast.result) {
                     title = titleLast;
                     query = argsRemainingTitleLast.join(" ");
-                    timeString = stdOutTitleLast.split(/\r?\n/)[1];
+                    timeString = resultLast.timeStrings.length > 0 ? resultLast.timeStrings[0] : null;
                 } else {
                     logInvalidQuery();
+                    return;
                 }
             } else {
                 logInvalidQuery();
+                return;
             }
         }
 
         if (isValidArgs === true || title != null) {
-            const optionsArray = ["--use-factory-defaults", "--loop-sound", "on", "--window-title", "title+left"];
+            const optionsArray = ["--loop-sound", "on", "--window-title", "title"];
 
             if (title != null) {
                 optionsArray.push("--title");
@@ -87,6 +95,7 @@ function parseQuery(query, settings) {
         }
     } catch (error) {
         logHourglassError(error);
+        return;
     }
 }
 
@@ -136,15 +145,19 @@ function logValidQuery(timeString, optionsArray, title) {
 function logCommand(command) {
     let description = null;
     switch (command) {
+        case "continue":
         case "resume":
+        case "go":
             description = "Resume all paused timers.";
             break;
+        case "wait":
+        case "stop":
         case "pause":
             description = "Pause all running timers.";
             break;
         default:
             console.log(JSON.stringify({result: []}));
-            break;
+            return;
     }
     console.log(
         JSON.stringify({
@@ -155,6 +168,35 @@ function logCommand(command) {
                     JsonRPCAction: {
                         method: "startTimer",
                         parameters: [command],
+                    },
+                    IcoPath: path.resolve(__dirname, "img", "app.png"),
+                    score: 0,
+                },
+            ],
+        })
+    );
+}
+
+function logEmptyQuery() {
+    console.log(
+        JSON.stringify({
+            result: [
+                {
+                    Title: "Pause all running timers.",
+                    Subtitle: "",
+                    JsonRPCAction: {
+                        method: "startTimer",
+                        parameters: ["pause"],
+                    },
+                    IcoPath: path.resolve(__dirname, "img", "app.png"),
+                    score: 0,
+                },
+                {
+                    Title: "Resume all running timers.",
+                    Subtitle: "",
+                    JsonRPCAction: {
+                        method: "startTimer",
+                        parameters: ["resume"],
                     },
                     IcoPath: path.resolve(__dirname, "img", "app.png"),
                     score: 0,
@@ -200,4 +242,10 @@ function logHourglassError(error) {
             ],
         })
     );
+}
+
+function hourglassValidateArgs(args) {
+    const buffer = execFileSync(hourglassValidatorExe, args); //.toString();
+    let jsonObj = JSON.parse(buffer);
+    return jsonObj;
 }
