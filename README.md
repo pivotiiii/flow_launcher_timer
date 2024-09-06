@@ -6,7 +6,7 @@ This is a plugin for [Flow Launcher](https://www.flowlauncher.com) that uses [ho
 
 ## Installation
 
-This plugin can be installed using the Flow Launcher Plugin Store or directly from the Flow Launcher search bar by entering
+This plugin can be installed using the Flow Launcher Plugin Store or directly from the Flow Launcher search bar by entering:
 
 `pm install XXX`
 
@@ -40,3 +40,26 @@ All time values are case insensitive. Timer titles are optional and cannot conta
 Timers can be paused/resumed with `pause` and `resume`.
 
 Any invalid inputs also show an option that displays a help site.
+
+## Node.js Compatibility Update
+
+To resolve a compatibility issue with Node.js v16.16.0 related to ES Module imports. If you're using v16.16.0, make the following change in your NodeModule directory for the plugin to function properly:
+
+### Modified Code
+
+```javascript
+// Path in your project
+NodeModule
+│
+└───Open
+    │
+    └───index.js
+
+// Update the import statement in your index.js file
+// From:
+import fs, { constants as fsConstants } from 'node:fs/promises';
+// To:
+import fs from 'fs/promises';
+```
+
+This update ensures compatibility by simplifying module resolution, avoiding potential interpretation issues with Node.js v16.16.0. The application should now run smoothly with these modifications. For more details, refer to the issue [#1](https://github.com/pivotiiii/flow_launcher_timer/issues/1).
