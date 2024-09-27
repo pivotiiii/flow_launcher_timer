@@ -4,11 +4,16 @@ This is a plugin for [Flow Launcher](https://www.flowlauncher.com) that uses [ho
 
 ![timer1](https://github.com/pivotiiii/flow_launcher_timer/assets/17112987/695834f1-2eae-4614-92bc-b257314f1ef1)
 
+## Prerequisites
+
+- node version >= 18.x.x installed
+- path to node.exe set in flow launcher settings/general
+
 ## Installation
 
 This plugin can be installed using the Flow Launcher Plugin Store or directly from the Flow Launcher search bar by entering
 
-`pm install XXX`
+`pm install Timer by pivotiiii`
 
 ## Usage
 
