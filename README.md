@@ -8,7 +8,7 @@ This is a plugin for [Flow Launcher](https://www.flowlauncher.com) that uses [ho
 
 This plugin can be installed using the Flow Launcher Plugin Store or directly from the Flow Launcher search bar by entering
 
-`pm install XXX`
+`pm install Timer`
 
 ## Usage
 

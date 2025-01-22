@@ -81,13 +81,13 @@ function parseQuery(query, settings) {
             }
 
             optionsArray.push("--theme");
-            optionsArray.push(`${settings.theme}${settings.useDarkTheme ? "-dark" : ""}`);
+            optionsArray.push(`${settings.theme}${settings.useDarkTheme === "true" ? "-dark" : ""}`);
             optionsArray.push("--prefer-24h-time");
-            optionsArray.push(`${settings.prefer24h ? "on" : "off"}`);
+            optionsArray.push(`${settings.prefer24h === "true" ? "on" : "off"}`);
             optionsArray.push("--digital-clock-time");
-            optionsArray.push(`${settings.displayDigital ? "on" : "off"}`);
+            optionsArray.push(`${settings.displayDigital === "true" ? "on" : "off"}`);
             optionsArray.push("--show-time-elapsed");
-            optionsArray.push(`${settings.elapsedTime ? "on" : "off"}`);
+            optionsArray.push(`${settings.elapsedTime === "true" ? "on" : "off"}`);
 
             optionsArray.push(query);
 
