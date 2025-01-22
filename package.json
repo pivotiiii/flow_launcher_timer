@@ -22,7 +22,7 @@
     "homepage": "https://github.com/pivotiiii/flow_launcher_timer",
     "type": "module",
     "dependencies": {
-        "open": "^10.1.0"
+        "open": "^9.1.0"
     },
     "devDependencies": {
         "@types/node": "^20.14.9"
