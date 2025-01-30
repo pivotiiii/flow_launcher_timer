@@ -27,7 +27,7 @@ body:
           description: >-
               When the input contains a time of day that does not specify "am" or
               "pm", prefer interpreting the input as a 24-hour time rather than the
-              closest 12-hour time to the current time. You may need to start your 
+              closest 12-hour time to the current time. You may need to start your
               timer a second time to see the effect of this setting.
           defaultValue: "true"
     - type: checkbox
