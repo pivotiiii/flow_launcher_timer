@@ -3,17 +3,22 @@ import path from "path";
 import {fileURLToPath} from "url";
 
 import open from "../node_modules/open/index.js";
+//import {error} from "console";
 
 const __dirname = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../");
 const hourglassDir = path.resolve(__dirname, "hourglass");
 const hourglassExe = path.resolve(hourglassDir, "Hourglass.exe");
 const hourglassValidatorExe = path.resolve(hourglassDir, "hourglass_args_validator.exe");
+const pathIconApp = path.resolve(__dirname, "img", "app.png");
+const pathIconError = path.resolve(__dirname, "img", "err.png");
+const pathIconHelp = path.resolve(__dirname, "img", "help.png");
 
 const hourglassCommands = {resume: ["resume", "continue", "go"], pause: ["pause", "wait", "stop"]};
 
 const {method, parameters, settings} = JSON.parse(process.argv[2]);
 
 if (method === "query") {
+    // if (parameters[0].split(" ")[0] === "debug") error(process.argv[2]); //for  debugging
     const query = parameters[0];
     if (query.length > 0) {
         parseQuery(query, settings);
@@ -22,6 +27,7 @@ if (method === "query") {
         //console.log(JSON.stringify({result: []}));
     }
 } else if (method === "startTimer") {
+    //error([process.argv[2], parameters]); //for debugging
     open(hourglassExe, {app: {arguments: parameters}});
 } else if (method === "showHelp") {
     open(path.resolve(__dirname, "help", "help.html"));
@@ -81,13 +87,13 @@ function parseQuery(query, settings) {
             }
 
             optionsArray.push("--theme");
-            optionsArray.push(`${settings.theme}${settings.useDarkTheme === "true" ? "-dark" : ""}`);
+            optionsArray.push(`${settings.theme}${settings.useDarkTheme === true ? "-dark" : ""}`);
             optionsArray.push("--prefer-24h-time");
-            optionsArray.push(`${settings.prefer24h === "true" ? "on" : "off"}`);
+            optionsArray.push(`${settings.prefer24h === true ? "on" : "off"}`);
             optionsArray.push("--digital-clock-time");
-            optionsArray.push(`${settings.displayDigital === "true" ? "on" : "off"}`);
+            optionsArray.push(`${settings.displayDigital === true ? "on" : "off"}`);
             optionsArray.push("--show-time-elapsed");
-            optionsArray.push(`${settings.elapsedTime === "true" ? "on" : "off"}`);
+            optionsArray.push(`${settings.elapsedTime === true ? "on" : "off"}`);
 
             optionsArray.push(query);
 
@@ -114,7 +120,7 @@ function logValidQuery(timeString, optionsArray, title) {
                         method: "startTimer",
                         parameters: optionsArray,
                     },
-                    IcoPath: path.resolve(__dirname, "img", "app.png"),
+                    IcoPath: pathIconApp,
                     score: 100,
                 },
                 {
@@ -124,7 +130,7 @@ function logValidQuery(timeString, optionsArray, title) {
                         method: "startTimer",
                         parameters: ["--always-on-top", "on", ...optionsArray],
                     },
-                    IcoPath: path.resolve(__dirname, "img", "app.png"),
+                    IcoPath: pathIconApp,
                     score: 0,
                 },
                 {
@@ -134,7 +140,7 @@ function logValidQuery(timeString, optionsArray, title) {
                         method: "startTimer",
                         parameters: ["--window-state", "minimized", ...optionsArray],
                     },
-                    IcoPath: path.resolve(__dirname, "img", "app.png"),
+                    IcoPath: pathIconApp,
                     score: -100,
                 },
             ],
@@ -169,7 +175,7 @@ function logCommand(command) {
                         method: "startTimer",
                         parameters: [command],
                     },
-                    IcoPath: path.resolve(__dirname, "img", "app.png"),
+                    IcoPath: pathIconApp,
                     score: 0,
                 },
             ],
@@ -188,7 +194,7 @@ function logEmptyQuery() {
                         method: "startTimer",
                         parameters: ["pause"],
                     },
-                    IcoPath: path.resolve(__dirname, "img", "app.png"),
+                    IcoPath: pathIconApp,
                     score: 0,
                 },
                 {
@@ -198,7 +204,7 @@ function logEmptyQuery() {
                         method: "startTimer",
                         parameters: ["resume"],
                     },
-                    IcoPath: path.resolve(__dirname, "img", "app.png"),
+                    IcoPath: pathIconApp,
                     score: 0,
                 },
             ],
@@ -217,7 +223,7 @@ function logInvalidQuery() {
                         method: "showHelp",
                         parameters: [],
                     },
-                    IcoPath: path.resolve(__dirname, "img", "help.png"),
+                    IcoPath: pathIconHelp,
                     score: 0,
                 },
             ],
@@ -236,7 +242,7 @@ function logHourglassError(error) {
                         method: "",
                         parameters: [],
                     },
-                    IcoPath: path.resolve(__dirname, "img", "err.png"),
+                    IcoPath: pathIconError,
                     score: 0,
                 },
             ],
