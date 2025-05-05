@@ -1,4 +1,4 @@
-import {execFileSync} from "child_process";
+import {execFileSync, spawn} from "child_process";
 import path from "path";
 import {fileURLToPath} from "url";
 
@@ -28,7 +28,11 @@ if (method === "query") {
     }
 } else if (method === "startTimer") {
     //error([process.argv[2], parameters]); //for debugging
-    open(hourglassExe, {app: {arguments: parameters}});
+    const child = spawn(hourglassExe, parameters, {
+        detached: true,
+        stdio: "ignore",
+    });
+    child.unref();
 } else if (method === "showHelp") {
     open(path.resolve(__dirname, "help", "help.html"));
 }
