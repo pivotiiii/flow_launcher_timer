@@ -1,7 +1,6 @@
-import {execFileSync} from "child_process";
+import {execFileSync, spawn} from "child_process";
 import path from "path";
 import {fileURLToPath} from "url";
-import { spawn } from "child_process";
 
 import open from "../node_modules/open/index.js";
 //import {error} from "console";
@@ -30,8 +29,8 @@ if (method === "query") {
 } else if (method === "startTimer") {
     //error([process.argv[2], parameters]); //for debugging
     const child = spawn(hourglassExe, parameters, {
-      detached: true,
-      stdio: "ignore",
+        detached: true,
+        stdio: "ignore",
     });
     child.unref();
 } else if (method === "showHelp") {
