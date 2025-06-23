@@ -101,6 +101,21 @@ function parseQuery(query: string, settings: FlowLauncherSettings) {
                         break validateArgsChain;
                     }
 
+                    //check if the query contains a quoted title with spaces
+                    const regex: RegExp = /(["'])(.*?)\1/; // matches quoted string with single or double quotes
+                    if (regex.test(query)) {
+                        const tempQuery: string = query.replace(regex, "").trim(); // remove the quoted title, trim
+                        const tempTitle: string = query.match(regex)![0].replace(/["']/g, ""); // extract the quoted title without quotes
+                        const validatorResultQuoted: HourglassValidatorResult = hourglassValidateArgs(["--title", tempTitle, tempQuery]);
+                        if (validatorResultQuoted.result) {
+                            isValidArgs = true;
+                            title = tempTitle;
+                            query = tempQuery;
+                            timeString = validatorResultQuoted.timeStrings.length > 0 ? validatorResultQuoted.timeStrings[0] : null;
+                            break validateArgsChain;
+                        }
+                    }
+
                     // if we reach here, then the query is invalid
                     logInvalidQuery();
                     return;
