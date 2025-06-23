@@ -26,7 +26,9 @@ jobs:
             - run: echo ${{steps.version.outputs.prop}}
             - name: Install dependencies
               run: |
-                  npm install
+                  npm install --include=dev
+                  npx tsc
+                  npm install --omit=dev
                   zip -r pivotiiii.Flow-Plugin.Timer.zip . -x '*.git*'
             - name: Publish
               uses: softprops/action-gh-release@v2

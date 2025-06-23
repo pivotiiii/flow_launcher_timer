@@ -7,6 +7,6 @@
     "Version": "1.1.4",
     "Language": "JavaScript",
     "Website": "https://github.com/pivotiiii/flow_launcher_timer",
-    "ExecuteFileName": "src\\main.js",
+    "ExecuteFileName": "dist\\main.js",
     "IcoPath": "img\\app.png"
 }
