@@ -25,6 +25,31 @@ export function formatHMS(h?: number, m?: number, s?: number): string {
   return parts.join(' ');
 }
 
+export interface DurationParts {
+  years?: number;
+  months?: number;
+  weeks?: number;
+  days?: number;
+  hours?: number;
+  minutes?: number;
+  seconds?: number;
+}
+
+export function formatDuration(parts: DurationParts): string {
+  const out: string[] = [];
+  const push = (n: number | undefined, s: string, p: string) => {
+    if (n && n > 0) out.push(pluralize(n, s, p));
+  };
+  push(parts.years, 'year', 'years');
+  push(parts.months, 'month', 'months');
+  push(parts.weeks, 'week', 'weeks');
+  push(parts.days, 'day', 'days');
+  push(parts.hours, 'hour', 'hours');
+  push(parts.minutes, 'minute', 'minutes');
+  push(parts.seconds, 'second', 'seconds');
+  return out.join(' ');
+}
+
 export function normalizeMonthName(name: string): string | null {
   const lower = name.toLowerCase();
   for (const month of MONTHS) {
@@ -53,4 +78,8 @@ export function isDayOfWeek(word: string): string | null {
 }
 
 export function pad2(n: number): string { return n < 10 ? `0${n}` : `${n}`; }
+
+export function normalizeConnector(s: string): string {
+  return s.trim().toLowerCase();
+}
 

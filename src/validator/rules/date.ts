@@ -5,9 +5,17 @@ function toInt(s: string): number { return parseInt(s, 10); }
 
 export class NumericDateRule implements Rule {
   name = 'numeric-date';
-  matches(input: string): boolean { return /^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(input.trim()); }
+  matches(input: string): boolean { return /^\d{1,2}\/\d{1,2}(?:\/\d{2,4})?$/.test(input.trim()); }
   parse(input: string): string | null {
-    const [a, b, c] = input.trim().split('/');
+    const parts = input.trim().split('/');
+    if (parts.length === 2) {
+      let d = toInt(parts[0]);
+      let m = toInt(parts[1]);
+      if (d <= 12 && m > 12) { const tmp = d; d = m; m = tmp; }
+      if (m < 1 || m > 12 || d < 1 || d > 31) return null;
+      return formatDMY(d, m, undefined);
+    }
+    const [a, b, c] = parts;
     let d = toInt(a), m = toInt(b);
     // try to infer ordering: if first > 12 and second <= 12 -> DD/MM; if first <=12 and second >12 -> MM/DD; else default DD/MM
     if (d <= 12 && m > 12) { const tmp = d; d = m; m = tmp; }
@@ -21,7 +29,7 @@ export class LongDateRule implements Rule {
   name = 'long-date';
   matches(input: string): boolean {
     const s = input.trim();
-    return /^(\d{1,2}\s+)?[A-Za-z]+\s+\d{1,2}(,\s*\d{2,4})?$/.test(s) || /^[A-Za-z]+\s+\d{1,2}(,\s*\d{2,4})?$/.test(s);
+    return /^([A-Za-z]+\s+\d{1,2}(?:,\s*\d{2,4})?|\d{1,2}\s+[A-Za-z]+(?:,\s*\d{2,4})?)$/i.test(s);
   }
   parse(input: string): string | null {
     const s = input.trim().replace(/,/g, '');
@@ -64,4 +72,3 @@ export class CompactMonthDayRule implements Rule {
     return formatDMY(d, monthIndex, undefined);
   }
 }
-

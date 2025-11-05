@@ -29,7 +29,7 @@ export class TimeOfDayRule implements Rule {
   matches(input: string): boolean {
     const s = input.trim();
     // Require either a colon or an explicit am/pm to avoid colliding with pure minute counts like "5"
-    return /^(\d{1,2}:[0-5]\d\s*(am|pm)?|\d{1,2}\s*(am|pm))$/i.test(s);
+    return /^(\d{1,2}([:\.]([0-5]\d)){1,2}\s*(am|pm)?|\d{1,2}\s*(am|pm))$/i.test(s);
   }
   parse(input: string): string | null {
     const norm = normalizeTimeOfDay(input.trim());
@@ -40,24 +40,27 @@ export class TimeOfDayRule implements Rule {
 export function normalizeTimeOfDay(s: string): string | null {
   const t = s.trim().toLowerCase();
   // 24h HH:MM
-  let m = t.match(/^([01]?\d|2[0-3]):([0-5]\d)$/);
+  let m = t.match(/^([01]?\d|2[0-3])[:\.]([0-5]\d)(?:[:\.]([0-5]\d))?$/);
   if (m) {
     const hh = toInt(m[1]);
     const mm = toInt(m[2]);
-    return `${pad2(hh)}:${pad2(mm)}`;
+    const ss = m[3] ? toInt(m[3]) : undefined;
+    return ss === undefined ? `${pad2(hh)}:${pad2(mm)}` : `${pad2(hh)}:${pad2(mm)}:${pad2(ss)}`;
   }
 
   // H or H:MM with am/pm
-  m = t.match(/^(\d{1,2})(?::([0-5]\d))?\s*(am|pm)$/);
+  m = t.match(/^(\d{1,2})(?:(?:[:\.])([0-5]\d))?(?:(?:[:\.])([0-5]\d))?\s*(am|pm)$/);
   if (m) {
     const h = toInt(m[1]);
     const mm = m[2] ? toInt(m[2]) : 0;
+    const ss = m[3] ? toInt(m[3]) : undefined;
     if (h < 1 || h > 12) return null;
-    return mm === 0 ? `${h} ${m[3]}` : `${h}:${pad2(mm)} ${m[3]}`;
+    if (ss !== undefined) return `${h}:${pad2(mm)}:${pad2(ss)} ${m[4]}`;
+    return mm === 0 ? `${h} ${m[4]}` : `${h}:${pad2(mm)} ${m[4]}`;
   }
 
   // bare H or H:MM => default to HH:MM with :00
-  m = t.match(/^(\d{1,2})(?::([0-5]\d))?$/);
+  m = t.match(/^(\d{1,2})(?::|\.([0-5]\d))?$/);
   if (m) {
     const h = toInt(m[1]);
     const mm = m[2] ? toInt(m[2]) : 0;
