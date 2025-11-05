@@ -9,7 +9,6 @@ import { validateArgs as validateArgsTS } from "./validator/index.js";
 const __dirname: string = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../");
 const hourglassDir: string = path.resolve(__dirname, "hourglass");
 const hourglassExe: string = path.resolve(hourglassDir, "Hourglass.exe");
-const hourglassValidatorExe: string = path.resolve(hourglassDir, "hourglass_args_validator.exe");
 
 const pathIconApp: string = path.resolve(__dirname, "img", "app.png");
 const pathIconError: string = path.resolve(__dirname, "img", "err.png");
