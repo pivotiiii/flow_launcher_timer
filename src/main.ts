@@ -1,6 +1,7 @@
 import {ChildProcess, spawn} from "child_process";
 import path from "path";
 import {fileURLToPath} from "url";
+import fs from "fs";
 
 import open from "open";
 //import {error} from "console";
@@ -46,7 +47,7 @@ if (method === "query") {
     }
 } else if (method === "startTimer") {
     //error([process.argv[2], parameters]); //for debugging
-    const child: ChildProcess = spawn(hourglassExe, parameters, {
+    const child: ChildProcess = spawn(getHourglassExePath(), parameters, {
         detached: true,
         stdio: "ignore",
     });
@@ -308,4 +309,17 @@ function logHourglassError(error: any) {
     };
 
     logToFlowLauncher([hourglassErrorItem]);
+}
+
+// Prefer installed Hourglass.exe if present, otherwise use bundled fallback
+function getHourglassExePath(): string {
+    const preferredWinPath = "C:\\Program Files (x86)\\Hourglass\\Hourglass.exe";
+    try {
+        if (process.platform === "win32" && fs.existsSync(preferredWinPath)) {
+            return preferredWinPath;
+        }
+    } catch {
+        // ignore and fall back to bundled
+    }
+    return hourglassExe;
 }

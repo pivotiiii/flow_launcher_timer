@@ -17,7 +17,10 @@ function tryParseDate(expr: string): string | null {
 function tryParseTime(expr: string): string | null {
   const timeRules: Rule[] = [new TimeOfDayRule()];
   for (const r of timeRules) {
-    if (r.matches(expr)) return r.parse(expr)?.replace(/^until\s+/, '');
+    if (r.matches(expr)) {
+      const val = r.parse(expr);
+      return val ? val.replace(/^until\s+/, '') : null;
+    }
   }
   return null;
 }

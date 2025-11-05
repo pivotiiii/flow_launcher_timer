@@ -18,7 +18,12 @@ export class ColonDurationRule implements Rule {
   name = 'colon-duration';
   matches(input: string): boolean { return /^\d{1,3}[:\.]\d{1,2}([:\.]\d{1,2})?$/.test(input.trim()); }
   parse(input: string): string | null {
-    const parts = input.trim().replaceAll('.', ':').split(':').map((p) => parseIntSafe(p));
+    const parts = input
+      .trim()
+      .split('.')
+      .join(':')
+      .split(':')
+      .map((p: string) => parseIntSafe(p));
     if (parts.length === 2) {
       const [mm, ss] = parts;
       return formatHMS(undefined, mm, ss) || null;
