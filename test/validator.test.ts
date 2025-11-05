@@ -74,6 +74,46 @@ describe('validateArgs (README examples)', () => {
     expect(validateArgs(['--title', 'pizza', '5:30'])).toEqual({ result: true, timeStrings: ['5 minutes 30 seconds'] });
   });
 
+  // Abbreviated 'u' and undelimited time inputs should normalize to the same moment
+  function minutesOfDay(s: string): number | null {
+    const str = s.trim().toLowerCase();
+    const m = str.match(/^until\s+(.+)$/);
+    const t = m ? m[1].trim() : str;
+    // 24h
+    let mm = t.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+    if (mm) {
+      return parseInt(mm[1], 10) * 60 + parseInt(mm[2], 10);
+    }
+    // 12h
+    mm = t.match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm)$/);
+    if (mm) {
+      let h = parseInt(mm[1], 10) % 12;
+      if (mm[3] === 'pm') h += 12;
+      const m2 = mm[2] ? parseInt(mm[2], 10) : 0;
+      return h * 60 + m2;
+    }
+    return null;
+  }
+
+  it('aliases and undelimited times map to the same time-of-day', () => {
+    const cases = [
+      ['u 1410'],
+      ['u 210pm'],
+      ['u 14:10'],
+      ['until 14:10'],
+      ['until 1410'],
+      ['until 210pm'],
+    ];
+    const expected = 14 * 60 + 10;
+    for (const args of cases) {
+      const res = validateArgs(args as unknown as string[]);
+      expect(res.result).toBe(true);
+      expect(res.timeStrings.length).toBe(1);
+      const mod = minutesOfDay(res.timeStrings[0]);
+      expect(mod).toBe(expected);
+    }
+  });
+
   // Extended tests from README (official site examples)
   it('minutes: 1 -> 1 minute', () => {
     expect(validateArgs(['1'])).toEqual({ result: true, timeStrings: ['1 minute'] });

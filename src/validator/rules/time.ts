@@ -16,9 +16,9 @@ export class NoonMidnightRule implements Rule {
 
 export class UntilPrefixRule implements Rule {
   name = 'until-prefix';
-  matches(input: string): boolean { return /^until\s+.+/i.test(input.trim()); }
+  matches(input: string): boolean { return /^(until|u)\s+.+/i.test(input.trim()); }
   parse(input: string): string | null {
-    const rem = input.trim().replace(/^until\s+/i, '');
+    const rem = input.trim().replace(/^(until|u)\s+/i, '');
     const normalized = normalizeTimeOfDay(rem);
     return normalized ? `until ${normalized}` : null;
   }
@@ -48,6 +48,14 @@ export function normalizeTimeOfDay(s: string): string | null {
     return ss === undefined ? `${pad2(hh)}:${pad2(mm)}` : `${pad2(hh)}:${pad2(mm)}:${pad2(ss)}`;
   }
 
+  // 24h HHMM (no separator), e.g., 1410 -> 14:10. Only accept 3-4 digits to avoid ambiguity with pure minutes
+  m = t.match(/^([01]?\d|2[0-3])([0-5]\d)$/);
+  if (m) {
+    const hh = toInt(m[1]);
+    const mm = toInt(m[2]);
+    return `${pad2(hh)}:${pad2(mm)}`;
+  }
+
   // H or H:MM with am/pm
   m = t.match(/^(\d{1,2})(?:(?:[:\.])([0-5]\d))?(?:(?:[:\.])([0-5]\d))?\s*(am|pm)$/);
   if (m) {
@@ -57,6 +65,16 @@ export function normalizeTimeOfDay(s: string): string | null {
     if (h < 1 || h > 12) return null;
     if (ss !== undefined) return `${h}:${pad2(mm)}:${pad2(ss)} ${m[4]}`;
     return mm === 0 ? `${h} ${m[4]}` : `${h}:${pad2(mm)} ${m[4]}`;
+  }
+
+  // HMMam/pm or HHMMam/pm without separator, e.g., 210pm -> 2:10 pm
+  m = t.match(/^(\d{1,2})([0-5]\d)\s*(am|pm)$/);
+  if (m) {
+    const h = toInt(m[1]);
+    const mm = toInt(m[2]);
+    const ap = m[3];
+    if (h < 1 || h > 12) return null;
+    return `${h}:${pad2(mm)} ${ap}`;
   }
 
   // bare H or H:MM => default to HH:MM with :00
