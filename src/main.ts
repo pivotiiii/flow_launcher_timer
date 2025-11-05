@@ -1,9 +1,10 @@
-import {ChildProcess, execFileSync, spawn} from "child_process";
+import {ChildProcess, spawn} from "child_process";
 import path from "path";
 import {fileURLToPath} from "url";
 
 import open from "open";
 //import {error} from "console";
+import { validateArgs as validateArgsTS } from "./validator/index.js";
 
 const __dirname: string = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../");
 const hourglassDir: string = path.resolve(__dirname, "hourglass");
@@ -159,9 +160,9 @@ interface HourglassValidatorResult {
 }
 
 function hourglassValidateArgs(args: string[]) {
-    const buffer = execFileSync(hourglassValidatorExe, args); //.toString();
-    const jsonObj: HourglassValidatorResult = JSON.parse(buffer.toString());
-    return jsonObj;
+    // Use pure TypeScript validator (no external exe)
+    // Keep interface identical to the original exe output
+    return validateArgsTS(args);
 }
 
 interface FlowLauncherReturnItem {
