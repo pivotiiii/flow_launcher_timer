@@ -27,6 +27,11 @@
     "devDependencies": {
         "@types/node": "^20.19.1",
         "@types/open": "^6.1.0",
-        "typescript": "^5.8.3"
+        "typescript": "^5.8.3",
+        "vitest": "^1.6.0"
+    },
+    "scripts": {
+        "build": "tsc -p .",
+        "test": "vitest run"
     }
 }

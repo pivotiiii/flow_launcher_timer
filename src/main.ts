@@ -1,14 +1,15 @@
-import {ChildProcess, execFileSync, spawn} from "child_process";
+import {ChildProcess, spawn} from "child_process";
 import path from "path";
 import {fileURLToPath} from "url";
+import fs from "fs";
 
 import open from "open";
 //import {error} from "console";
+import { validateArgs as validateArgsTS } from "./validator/index.js";
 
 const __dirname: string = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../");
 const hourglassDir: string = path.resolve(__dirname, "hourglass");
 const hourglassExe: string = path.resolve(hourglassDir, "Hourglass.exe");
-const hourglassValidatorExe: string = path.resolve(hourglassDir, "hourglass_args_validator.exe");
 
 const pathIconApp: string = path.resolve(__dirname, "img", "app.png");
 const pathIconError: string = path.resolve(__dirname, "img", "err.png");
@@ -46,7 +47,7 @@ if (method === "query") {
     }
 } else if (method === "startTimer") {
     //error([process.argv[2], parameters]); //for debugging
-    const child: ChildProcess = spawn(hourglassExe, parameters, {
+    const child: ChildProcess = spawn(getHourglassExePath(), parameters, {
         detached: true,
         stdio: "ignore",
     });
@@ -159,9 +160,9 @@ interface HourglassValidatorResult {
 }
 
 function hourglassValidateArgs(args: string[]) {
-    const buffer = execFileSync(hourglassValidatorExe, args); //.toString();
-    const jsonObj: HourglassValidatorResult = JSON.parse(buffer.toString());
-    return jsonObj;
+    // Use pure TypeScript validator (no external exe)
+    // Keep interface identical to the original exe output
+    return validateArgsTS(args);
 }
 
 interface FlowLauncherReturnItem {
@@ -308,4 +309,17 @@ function logHourglassError(error: any) {
     };
 
     logToFlowLauncher([hourglassErrorItem]);
+}
+
+// Prefer installed Hourglass.exe if present, otherwise use bundled fallback
+function getHourglassExePath(): string {
+    const preferredWinPath = "C:\\Program Files (x86)\\Hourglass\\Hourglass.exe";
+    try {
+        if (process.platform === "win32" && fs.existsSync(preferredWinPath)) {
+            return preferredWinPath;
+        }
+    } catch {
+        // ignore and fall back to bundled
+    }
+    return hourglassExe;
 }
